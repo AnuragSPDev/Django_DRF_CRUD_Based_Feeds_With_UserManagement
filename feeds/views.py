@@ -1,10 +1,13 @@
 from rest_framework.response import Response
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.status import (HTTP_200_OK, HTTP_400_BAD_REQUEST, 
+                                   HTTP_403_FORBIDDEN)
+from rest_framework import permissions
+from rest_framework.views import APIView
+
 from .models import Feeds, Likes
 from .serializer import FeedSerializer, CommentSerializer, LikesSerializer
-from rest_framework import permissions, authentication
-from rest_framework.views import APIView
+
 from django.core.exceptions import ObjectDoesNotExist
 
 
