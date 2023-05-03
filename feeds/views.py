@@ -38,14 +38,17 @@ class FeedCommentsView(APIView):
     try:
         def post(self, request):
             data = request.data
-            if data is None:
-                return Response({
-                    'status': HTTP_400_BAD_REQUEST,
-                    'message': 'Blank comment is not allowed'
-                })
+
+            # Moved this check as a validator in serializer where length of the comment is being checked
+
+            # if data is None:
+            #     return Response({
+            #         'status': HTTP_400_BAD_REQUEST,
+            #         'message': 'Blank comment is not allowed'
+            #     })
        
             try:
-                # Check is feed exists or not
+                # Check whether feed exists or not
                 feed = Feeds.objects.get(feed_id=request.data.get('feed'))
             except ObjectDoesNotExist as e:
                 return Response({
@@ -66,7 +69,7 @@ class FeedCommentsView(APIView):
                 })
             return Response({
                 'status': HTTP_403_FORBIDDEN,
-                'message': 'Something went wrong'
+                'message': serializer.errors
             })
     except Exception as e:
         print('Exception is: ', e)
@@ -81,11 +84,14 @@ class FeedLikeView(APIView):
     try:
         def post(self, request):
             data = request.data
-            if data.get('feed') is None:
-                return Response({
-                    'status': HTTP_400_BAD_REQUEST,
-                    'message': "Feed can't be none"
-                })
+
+            # Below check might not be required as Like will be made on an existing feed
+            
+            # if data.get('feed') is None:
+            #     return Response({
+            #         'status': HTTP_400_BAD_REQUEST,
+            #         'message': "Feed can't be none"
+            #     })
             
             try:
                 # Check is feed exists or not
@@ -102,7 +108,7 @@ class FeedLikeView(APIView):
                 serializer.save()
 
                 # Set the number of likes for a feed in the Feeds model
-                feed.likes = len(Likes.objects.filter(feed=feed))
+                feed.likes = Likes.objects.filter(feed=feed).count()
                 feed.save()
                 return Response({
                     'status': HTTP_200_OK,
@@ -111,7 +117,7 @@ class FeedLikeView(APIView):
                 })
             return Response({
                 'status': HTTP_403_FORBIDDEN,
-                'message': 'Something went wrong'
+                'message': serializer.errors
             })                
     except Exception as e:
         print('Exception is: ', e)

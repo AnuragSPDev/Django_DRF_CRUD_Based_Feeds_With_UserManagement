@@ -38,6 +38,11 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comments
         fields = ('comment', )
 
+    def validate(self, validated_data):
+        if len(validated_data.get('comment')) < 2:
+            raise serializers.ValidationError('Atleast 5 characters are required')
+        return validated_data
+
     def create(self, validated_data):
         user = self.context.get('user')
         feed = self.context.get('feed')
